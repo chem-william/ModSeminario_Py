@@ -155,27 +155,31 @@ def force_angle_constant_special_case(
 
     k_theta_array = np.zeros((180, 360))
 
+    theta_array = np.arange(0, 180)
+    theta_array_rad = np.deg2rad(theta_array)
+    cos_contribution = np.cos(theta_array_rad)
+    sin_contribution = np.sin(theta_array_rad)
+    a = sin_contribution*cos_contribution
+    b = sin_contribution*sin_contribution
+    c = cos_contribution
+
+    u_N_arr = np.vstack((a, b, c)).T
+    u_PA_arr = np.cross(u_N_arr, u_AB[None, :])
+    u_PA_arr /= np.sqrt((u_PA_arr**2).sum(-1))[..., np.newaxis]
+
+    u_PC_arr = np.cross(u_CB[None, :], u_N_arr)
+    u_PC_arr /= np.sqrt((u_PC_arr**2).sum(-1))[..., np.newaxis]
+
     # Find force constant with varying u_N
     # (with vector uniformly sampled across a sphere)
-    for theta in tqdm(range(0, 180)):
-        for phi in range(0, 360):
-            r = 1
-            u_N = [
-                r * np.sin(np.deg2rad(theta))*np.cos(np.deg2rad(theta)),
-                r * np.sin(np.deg2rad(theta))*np.sin(np.deg2rad(theta)),
-                r * np.cos(np.deg2rad(theta))
-            ]
-
-            u_PA = np.cross(u_N,  u_AB)
-            u_PA = u_PA / np.linalg.norm(u_PA)
-
-            u_PC = np.cross(u_CB, u_N)
-            u_PC = u_PC / np.linalg.norm(u_PC)
-
-            sum_first = 0
-            sum_second = 0
+    for theta_idx in tqdm(range(0, 180)):
+        for phi_idx in range(0, 360, 8):
+            u_PA = u_PA_arr[theta_idx]
+            u_PC = u_PC_arr[theta_idx]
 
             # Projections of eigenvalues
+            sum_first = 0
+            sum_second = 0
             for i in range(0, 3):
                 eig_AB_i = eigenvectors_AB[:, i]
                 eig_BC_i = eigenvectors_CB[:, i]
@@ -189,7 +193,13 @@ def force_angle_constant_special_case(
             k_theta_ij = -k_theta_ij  # Change to OPLS form
 
             k_theta_ij = np.abs(k_theta_ij * 0.5)  # Change to OPLS form
-            k_theta_array[theta, phi] = k_theta_ij
+            k_theta_array[theta_idx, phi_idx] = k_theta_ij
+
+    # print(np.mean(result1))
+    # print(np.std(result1))
+    # print("="*25)
+    # print(np.mean(result2))
+    # print(np.std(result2))
 
     # Removes cases where u_N was linearly dependent of u_CB or u_AB
 
