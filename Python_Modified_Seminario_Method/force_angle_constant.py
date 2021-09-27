@@ -195,12 +195,6 @@ def force_angle_constant_special_case(
             k_theta_ij = np.abs(k_theta_ij * 0.5)  # Change to OPLS form
             k_theta_array[theta_idx, phi_idx] = k_theta_ij
 
-    # print(np.mean(result1))
-    # print(np.std(result1))
-    # print("="*25)
-    # print(np.mean(result2))
-    # print(np.std(result2))
-
     # Removes cases where u_N was linearly dependent of u_CB or u_AB
 
     # Force constant used is taken as the mean
