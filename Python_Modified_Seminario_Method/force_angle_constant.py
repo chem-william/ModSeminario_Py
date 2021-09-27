@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from unit_vector_N import unit_vector_N
+from tqdm import tqdm
 
 
 def u_PA_from_angles(atom_A, atom_B, atom_C, coords):
@@ -156,13 +157,13 @@ def force_angle_constant_special_case(
 
     # Find force constant with varying u_N
     # (with vector uniformly sampled across a sphere)
-    for theta in range(0, 180):
+    for theta in tqdm(range(0, 180)):
         for phi in range(0, 360):
             r = 1
             u_N = [
-                r * np.sin(math.radians(theta))*np.cos(math.radians(theta)),
-                r * np.sin(math.radians(theta))*np.sin(math.radians(theta)),
-                r * np.cos(math.radians(theta))
+                r * np.sin(np.deg2rad(theta))*np.cos(np.deg2rad(theta)),
+                r * np.sin(np.deg2rad(theta))*np.sin(np.deg2rad(theta)),
+                r * np.cos(np.deg2rad(theta))
             ]
 
             u_PA = np.cross(u_N,  u_AB)
