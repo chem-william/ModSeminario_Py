@@ -140,7 +140,8 @@ def coords_from_fchk(inputfilefolder, fchk_file):
                 len(tline) < 15 or (
                     tline[0:14].strip() != 'Force Field' and
                     tline[0:17].strip() != 'Int Atom Types' and
-                    tline[0:13].strip() != 'Atom Types'
+                    tline[0:13].strip() != 'Atom Types' and
+                    "Number of symbols in" not in tline.strip()
                 )
             ):
                 tmp = (tline.strip()).split()
