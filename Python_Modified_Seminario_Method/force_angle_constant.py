@@ -183,8 +183,8 @@ def force_angle_constant_special_case(
             for i in range(0, 3):
                 eig_AB_i = eigenvectors_AB[:, i]
                 eig_BC_i = eigenvectors_CB[:, i]
-                sum_first = sum_first + (eigenvalues_AB[i] * np.abs(dot_product(u_PA , eig_AB_i)))
-                sum_second = sum_second + (eigenvalues_CB[i] * np.abs(dot_product(u_PC, eig_BC_i)))
+                sum_first += eigenvalues_AB[i] * np.abs(dot_product(u_PA , eig_AB_i))
+                sum_second += eigenvalues_CB[i] * np.abs(dot_product(u_PC, eig_BC_i))
 
             # Added as two springs in series
             k_theta_ij = (1 / (bond_length_AB**2 * sum_first)) + (1 / (bond_length_BC**2 * sum_second))
@@ -198,7 +198,7 @@ def force_angle_constant_special_case(
     # Removes cases where u_N was linearly dependent of u_CB or u_AB
 
     # Force constant used is taken as the mean
-    k_theta = np.mean(np.mean(k_theta_array))
+    k_theta = np.mean(k_theta_array)
 
     # Equilibrium Angle independent of u_N
     theta_0 = math.degrees(math.cos(np.dot(u_AB, u_CB)))
