@@ -1,5 +1,11 @@
 import os.path
 import numpy as np
+from ase.units import Bohr
+from ase.units import Hartree
+from ase.units import kcal
+from ase.units import mol
+from ase.geometry.analysis import Analysis
+from ase.io import read
 
 
 def input_data_processing(inputfilefolder):
@@ -83,7 +89,7 @@ def input_data_processing(inputfilefolder):
             if len(atom_names[i]) == 1:
                 atom_names[i] = atom_names[i] + ' '
 
-    return(bond_list, angle_list, coords, N, hessian, atom_names)
+    return bond_list, angle_list, coords, N, hessian, atom_names
 
 
 def coords_from_fchk(inputfilefolder, fchk_file):
@@ -91,13 +97,11 @@ def coords_from_fchk(inputfilefolder, fchk_file):
     Function extracts xyz file from the .fchk output file from Gaussian, this
     provides the coordinates of the molecules
     """
-
     if os.path.exists(inputfilefolder + fchk_file):
         fid = open((inputfilefolder + fchk_file), "r")
     else:
-        fid_log = open((inputfilefolder + 'MSM_log'), "a")
-        fid_log.write('ERROR = No .fchk file found.')
-        fid_log.close()
+        with open((inputfilefolder + 'MSM_log'), "a") as fid_log:
+            fid_log.write('ERROR = No .fchk file found.')
         return 0, 0
 
     tline = fid.readline()
@@ -150,18 +154,15 @@ def coords_from_fchk(inputfilefolder, fchk_file):
                 tline = fid.readline()
 
         tline = fid.readline()
-
     fid.close()
 
-    list_coords = [float(x)*float(0.529) for x in list_coords]
+    list_coords = [float(x) * Bohr for x in list_coords]
 
     # Opens the new xyz file
     file = open(inputfilefolder + 'input_coords.xyz', "w")
     file.write(str(N) + '\n \n')
 
     xyz = np.zeros((N, 3))
-
-    names = []
 
     with open('elementlist.csv', "r") as fid_csv:
         lines = fid_csv.read().splitlines()
@@ -173,6 +174,7 @@ def coords_from_fchk(inputfilefolder, fchk_file):
         element_names.append(lines[x].split(","))
 
     # Gives name for atomic number
+    names = []
     for x in range(0, len(numbers)):
         names.append(element_names[int(numbers[x]) - 1][1])
 
@@ -185,16 +187,16 @@ def coords_from_fchk(inputfilefolder, fchk_file):
 
         file.write(
             names[i] +
-            str(round(xyz[i][0], 3)) +
+            str(round(xyz[i][0], 6)) +
             ' ' +
-            str(round(xyz[i][1], 3)) +
+            str(round(xyz[i][1], 6)) +
             ' ' +
-            str(round(xyz[i][2], 3)) +
+            str(round(xyz[i][2], 6)) +
             '\n'
         )
-
     file.close()
-    return (hessian, N, names, xyz)
+
+    return hessian, N, names, xyz
 
 
 def bond_angle_list(inputfilefolder):
@@ -208,9 +210,8 @@ def bond_angle_list(inputfilefolder):
     elif os.path.isfile(inputfilefolder + '/lig.log'):
         fid = open((inputfilefolder + '/lig.log'), "r")
     else:
-        fid_log = open((inputfilefolder + 'MSM_log'), "a")
-        fid_log.write('ERROR - No .log file found. \n')
-        fid_log.close
+        with open((inputfilefolder + 'MSM_log'), "a") as fid_log:
+            fid_log.write('ERROR - No .log file found. \n')
         return
 
     tline = fid.readline()
@@ -229,6 +230,8 @@ def bond_angle_list(inputfilefolder):
             # Stops when all bond and angles recorded
             while ((tmp[0] == 'R') or (tmp[0] == 'A')):
                 line = tline.split()
+                if len(line) < 2:
+                    break
                 tmp = line[1]
 
                 # Bond or angles listed as string
@@ -251,4 +254,4 @@ def bond_angle_list(inputfilefolder):
             # Leave loop
             tline = -1
 
-    return(bond_list, angle_list)
+    return bond_list, angle_list

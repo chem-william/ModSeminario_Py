@@ -83,7 +83,7 @@ def force_angle_constant(
     sum_second = sum_second/scaling_2
 
     # Added as two springs in series
-    k_theta = (1 / ((bond_length_AB**2) * sum_first)) + (1 / ((bond_length_BC**2) * sum_second))
+    k_theta = (1 / (bond_length_AB**2 * sum_first)) + (1 / (bond_length_BC**2 * sum_second))
     k_theta = 1/k_theta
 
     k_theta = -k_theta  # Change to OPLS form
@@ -182,7 +182,7 @@ def force_angle_constant_special_case(
                 sum_second = sum_second + (eigenvalues_CB[i] * np.abs(dot_product(u_PC, eig_BC_i)))
 
             # Added as two springs in series
-            k_theta_ij = (1 / ((bond_length_AB**2) * sum_first)) + (1 / ((bond_length_BC**2) * sum_second))
+            k_theta_ij = (1 / (bond_length_AB**2 * sum_first)) + (1 / (bond_length_BC**2 * sum_second))
             k_theta_ij = 1/k_theta_ij
 
             k_theta_ij = -k_theta_ij  # Change to OPLS form

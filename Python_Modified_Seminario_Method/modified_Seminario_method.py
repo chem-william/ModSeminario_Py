@@ -28,22 +28,21 @@ def modified_Seminario_method(
     print(inputfilefolder)
 
     # Create log file
-    fid_log = open((inputfilefolder + 'MSM_log'), "w")
-    fid_log.write('Modified Seminario Method \n')
-    fid_log.write(
-        'Parametrization started for files in folder' + inputfilefolder + '\n'
-    )
-    fid_log.write('Time is now: ' + time.strftime('%X %x %Z') + '\n')
+    with open(inputfilefolder + 'MSM_log', "w") as fid_log:
+        fid_log.write('Modified Seminario Method \n')
+        fid_log.write(
+            'Parametrization started for files in folder' + inputfilefolder + '\n'
+        )
+        fid_log.write('Time is now: ' + time.strftime('%X %x %Z') + '\n')
 
     # Square the vibrational scaling used for frequencies
     vibrational_scaling_squared = vibrational_scaling**2
 
     # Import all input data
-    [bond_list, angle_list, coords, N, hessian, atom_names] = input_data_processing(inputfilefolder)
+    bond_list, angle_list, coords, N, hessian, atom_names = input_data_processing(inputfilefolder)
 
     # Find bond lengths
     bond_lengths = np.zeros((N, N))
-
     for i in range(0, N):
         for j in range(0, N):
             diff_i_j = np.array(coords[i, :]) - np.array(coords[j, :])
@@ -51,22 +50,38 @@ def modified_Seminario_method(
 
     eigenvectors = np.empty((3, 3, N, N), dtype=complex)
     eigenvalues = np.empty((N, N, 3), dtype=complex)
-    partial_hessian = np.zeros((3, 3))
-
     for i in range(0, N):
         for j in range(0, N):
-            partial_hessian = hessian[(i * 3):((i + 1)*3), (j * 3):((j + 1)*3)]
-            [a, b] = np.linalg.eig(partial_hessian)
-            eigenvalues[i, j, :] = (a)
-            eigenvectors[:, :, i, j] = (b)
+            partial_hessian = hessian[i * 3:(i + 1)*3, j * 3:(j + 1)*3]
+            a, b = np.linalg.eig(partial_hessian)
+            eigenvalues[i, j, :] = a
+            eigenvectors[:, :, i, j] = b
 
-    # The bond values are calculated and written to file
-    unique_values_bonds = bonds_calculated_printed(outputfilefolder, vibrational_scaling_squared, bond_list, bond_lengths, atom_names, eigenvalues, eigenvectors, coords)
+    # Calculate bond values and write to file
+    unique_values_bonds = bonds_calculated_printed(
+        outputfilefolder,
+        vibrational_scaling_squared,
+        bond_list,
+        bond_lengths,
+        atom_names,
+        eigenvalues,
+        eigenvectors,
+        coords,
+    )
 
-    # The angle values are calculated and written to file
-    unique_values_angles = angles_calculated_printed(outputfilefolder, vibrational_scaling_squared, angle_list, bond_lengths, atom_names, eigenvalues, eigenvectors, coords)
+    # Calculate angle values and write to file
+    unique_values_angles = angles_calculated_printed(
+        outputfilefolder,
+        vibrational_scaling_squared,
+        angle_list,
+        bond_lengths,
+        atom_names,
+        eigenvalues,
+        eigenvectors,
+        coords,
+    )
 
-    # The final section finds the average bond and angle terms for each
+    # Find the average bond and angle terms for each
     # bond/angle class if the .z exists to supply angle/bond classes and then 
     # writes the new terms to a .sb file
     if os.path.exists(inputfilefolder + 'Zmat.z'):
