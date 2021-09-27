@@ -16,29 +16,36 @@ def input_data_processing(inputfilefolder):
     """
 
     # Gets Hessian in unprocessed form and writes .xyz file too
-    [unprocessed_Hessian, N, names, coords] = coords_from_fchk(inputfilefolder, 'lig.fchk')
+    unprocessed_Hessian, N, names, coords = coords_from_fchk(inputfilefolder, 'lig.fchk')
 
     # Gets bond and angle lists
-    [bond_list, angle_list] = bond_angle_list(inputfilefolder)
+    bond_list, angle_list = bond_angle_list(inputfilefolder)
+    molecule = read(inputfilefolder + "input_coords.xyz")
+    ana = Analysis(molecule)
+    adjacency = ana.adjacency_matrix[0].toarray()
+    adjacency = adjacency @ adjacency
+    adjacency[np.diag_indices_from(adjacency)] = 0
+    bond_list = np.argwhere(adjacency != 0)
 
     with open("Number_to_Atom_type") as f:
         OPLS_number_to_name = f.readlines()
 
     OPLS_number_to_name = [x.split() for x in OPLS_number_to_name]
 
+    # Write the hessian in a 2D array format
     length_hessian = 3 * N
     hessian = np.zeros((length_hessian, length_hessian))
     m = 0
-
-    # Write the hessian in a 2D array format
-    for i in range(0, (length_hessian)):
-        for j in range(0, (i + 1)):
+    for i in range(0, length_hessian):
+        for j in range(0, i + 1):
             hessian[i][j] = unprocessed_Hessian[m]
             hessian[j][i] = unprocessed_Hessian[m]
             m = m + 1
-    # Change Hartree/bohr -> kcal/mol/ang
-    hessian = (hessian * (627.509391)) / (0.529**2)
 
+    # Change Hartree/bohr -> kcal/mol/ang
+    # hessian = (hessian * (Hartree * mol / kcal)) / Bohr**2
+    hessian = hessian * Hartree / Bohr**2
+    np.save(inputfilefolder + "hessian.npy", hessian)
     # if zmat exists part here
     atom_names = []
 
