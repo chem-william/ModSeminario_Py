@@ -201,6 +201,6 @@ def force_angle_constant_special_case(
     k_theta = np.mean(k_theta_array)
 
     # Equilibrium Angle independent of u_N
-    theta_0 = math.degrees(math.cos(np.dot(u_AB, u_CB)))
+    theta_0 = np.deg2rad(np.cos(np.dot(u_AB, u_CB)))
 
     return k_theta, theta_0
