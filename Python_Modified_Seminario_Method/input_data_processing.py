@@ -260,6 +260,6 @@ def bond_angle_list(inputfilefolder):
                 tline = fid.readline()
 
             # Leave loop
-            tline = -1
+            tline = False
 
     return bond_list, angle_list
