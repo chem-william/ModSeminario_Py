@@ -14,7 +14,7 @@ def angles_calculated_printed(
     coords
 ):
     """
-    This function uses the modified Seminario method to find the angle
+    Uses the modified Seminario method to find the angle
     parameters and print them to file
     """
 
@@ -145,7 +145,7 @@ def angles_calculated_printed(
         k_theta[i] = (AB_k_theta + BA_k_theta) / 2
         theta_0[i] = (AB_theta_0 + BA_theta_0) / 2
     
-        # Vibrational_scaling takes into account DFT deficities/ anharmocity 
+        # Vibrational_scaling takes into account DFT deficities/ anharmonicity 
         k_theta[i] =  k_theta[i] * vibrational_scaling_squared
         
         fid.write(

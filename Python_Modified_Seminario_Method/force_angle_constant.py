@@ -91,7 +91,7 @@ def force_angle_constant(
     k_theta = np.abs(k_theta * 0.5)  # Change to OPLS form
 
     # Equilibrium Angle
-    theta_0 = math.degrees(math.acos(np.dot(u_AB, u_CB)))
+    theta_0 = np.deg2rad(np.arccos(np.dot(u_AB, u_CB)))
 
     # If the vectors u_CB and u_AB are linearly dependent u_N cannot be defined
     # This case is dealt with here
@@ -99,7 +99,7 @@ def force_angle_constant(
             np.abs(np.sum((u_CB) - (u_AB))) < 0.01 or
             (np.abs(np.sum((u_CB) - (u_AB))) > 1.99 and np.abs(np.sum((u_CB) - (u_AB))) < 2.01)
     ):
-        [k_theta, theta_0] = force_angle_constant_special_case(
+        k_theta, theta_0 = force_angle_constant_special_case(
             atom_A,
             atom_B,
             atom_C,
