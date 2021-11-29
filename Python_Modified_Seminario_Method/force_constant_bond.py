@@ -10,7 +10,7 @@ def force_constant_bond(atom_A, atom_B, eigenvalues, eigenvectors, coords):
     eigenvectors_AB = eigenvectors[:, :, atom_A, atom_B]
 
     # Vector along bond
-    diff_AB = np.array(coords[atom_B, :]) - np.array(coords[atom_A, :])
+    diff_AB = coords[atom_B, :] - coords[atom_A, :]
     norm_diff_AB = np.linalg.norm(diff_AB)
     unit_vectors_AB = diff_AB / norm_diff_AB
 

@@ -44,7 +44,7 @@ def modified_Seminario_method(
     bond_lengths = np.zeros((N, N))
     for i in range(0, N):
         for j in range(0, N):
-            diff_i_j = np.array(coords[i, :]) - np.array(coords[j, :])
+            diff_i_j = coords[i, :] - coords[j, :]
             bond_lengths[i][j] = np.linalg.norm(diff_i_j)
 
     eigenvectors = np.empty((3, 3, N, N), dtype=complex)
