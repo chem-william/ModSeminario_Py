@@ -1,4 +1,3 @@
-import math
 import numpy as np
 from unit_vector_N import unit_vector_N
 from tqdm import tqdm

@@ -1,6 +1,5 @@
 import numpy as np
 import os.path
-import sys
 import time
 
 from angles_calculated_printed import angles_calculated_printed
